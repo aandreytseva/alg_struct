@@ -20,12 +20,19 @@ public class BankAccount {
 
     public static String filePath = "C:\\Projects\\Lab_alg\\src\\main\\java\\resources\\accounts.csv";
     public static String writePath = "C:\\Projects\\Lab_alg\\src\\main\\java\\resources\\sortedaccounts.csv";
+
     private String lastName;
     private String firstName;
     private long personalCode;
     private long accountNumber;
     private double balance;
     private String currency;
+
+    private static long comparisons = 0;
+    private static long swaps = 0;
+    private static long bubbleSortTime = 0;
+    private static long quickSortTime = 0;
+    private static long mergeSortTime = 0;
 
     public static List<BankAccount> readFromCSV(String filePath) {
         List<BankAccount> bankAccounts = new ArrayList<>();
@@ -77,43 +84,88 @@ public class BankAccount {
     public static void bubbleSort(List<BankAccount> accounts) {
         int n = accounts.size();
         boolean swapped;
+        long startTime = System.nanoTime(); // Record start time in nanoseconds
         do {
             swapped = false;
             for (int i = 1; i < n; i++) {
+                comparisons++; // Increment comparisons
                 if (accounts.get(i - 1).getLastName().compareTo(accounts.get(i).getLastName()) > 0) {
                     // Swap accounts[i-1] and accounts[i]
                     BankAccount temp = accounts.get(i - 1);
                     accounts.set(i - 1, accounts.get(i));
                     accounts.set(i, temp);
+                    swaps++; // Increment swaps
                     swapped = true;
                 }
             }
         } while (swapped);
+        long endTime = System.nanoTime(); // Record end time in nanoseconds
+
+        // Calculate execution time in nanoseconds
+        bubbleSortTime = endTime - startTime;
+
+        // Print statistics
+        System.out.println("\nBubble Sort:");
+        System.out.println("Theoretical Complexity Estimate: O(n^2)");
+        System.out.println("Comparisons: " + comparisons);
+        System.out.println("Swaps: " + swaps);
+        System.out.println("Execution Time (ns): " + bubbleSortTime);
     }
 
     //Second sorting method
     public static void quickSort(List<BankAccount> accounts, int low, int high) {
         if (low < high) {
-            int pivotIndex = partition(accounts, low, high);
-            quickSort(accounts, low, pivotIndex - 1);
-            quickSort(accounts, pivotIndex + 1, high);
+            int[] pivotIndices = partition(accounts, low, high);
+            quickSort(accounts, low, pivotIndices[0] - 1);
+            quickSort(accounts, pivotIndices[1] + 1, high);
         }
     }
 
-    private static int partition(List<BankAccount> accounts, int low, int high) {
+    public static int[] partition(List<BankAccount> accounts, int low, int high) {
         double pivot = accounts.get(high).getBalance();
         int i = low - 1;
+        int j = high + 1;
 
-        for (int j = low; j < high; j++) {
-            if (accounts.get(j).getBalance() >= pivot) { // Change ">" to ">=" here
+        while (true) {
+            do {
                 i++;
-                swap(accounts, i, j);
-            }
-        }
+                comparisons++; // Increment comparisons
+            } while (accounts.get(i).getBalance() < pivot);
 
-        swap(accounts, i + 1, high);
-        return i + 1;
+            do {
+                j--;
+                comparisons++; // Increment comparisons
+            } while (accounts.get(j).getBalance() > pivot);
+
+            if (i >= j) {
+                int[] pivotIndices = { i, j };
+                return pivotIndices;
+            }
+
+            swaps++; // Increment swaps
+            swap(accounts, i, j);
+        }
     }
+
+    public static void performQuickSort(List<BankAccount> accounts) {
+        comparisons = 0; // Reset comparisons count
+        swaps = 0;       // Reset swaps count
+
+        long startTime = System.nanoTime(); // Record start time in nanoseconds
+        quickSort(accounts, 0, accounts.size() - 1);
+        long endTime = System.nanoTime();   // Record end time in nanoseconds
+
+        // Calculate execution time in nanoseconds
+        quickSortTime = endTime - startTime;
+
+        // Print statistics
+        System.out.println("\nQuick Sort:");
+        System.out.println("Theoretical Complexity Estimate: O(n log n) average case");
+        System.out.println("Comparisons: " + comparisons);
+        System.out.println("Swaps: " + swaps);
+        System.out.println("Execution Time (ns): " + quickSortTime);
+    }
+
 
     private static void swap(List<BankAccount> accounts, int i, int j) {
         BankAccount temp = accounts.get(i);
@@ -197,10 +249,9 @@ public class BankAccount {
         //    printAccounts();
         List<BankAccount> bankAccounts = readFromCSV(filePath);
         //  bubbleSort(bankAccounts);
-        //quickSort(bankAccounts, 0, bankAccounts.size() - 1);
-        mergeSort(bankAccounts, 0, bankAccounts.size() - 1);
+        //  quickSort(bankAccounts, 0, bankAccounts.size() - 1);
+        performQuickSort(bankAccounts);
+        //  mergeSort(bankAccounts, 0, bankAccounts.size() - 1);
         writeSortedDataToCSV(bankAccounts, writePath);
-
-
     }
 }
