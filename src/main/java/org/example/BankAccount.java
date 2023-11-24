@@ -18,8 +18,8 @@ import java.util.List;
 @ToString
 public class BankAccount {
 
-    public static String filePath = "C:\\Projects\\Lab_alg\\src\\main\\java\\resources\\accounts.csv";
-    public static String writePath = "C:\\Projects\\Lab_alg\\src\\main\\java\\resources\\sortedaccounts.csv";
+    public static String filePath = "src/main/resources/accounts.csv";
+    public static String writePath = "src/main/resources/sortedaccounts.csv";
 
     private String lastName;
     private String firstName;
@@ -138,7 +138,7 @@ public class BankAccount {
             } while (accounts.get(j).getBalance() > pivot);
 
             if (i >= j) {
-                int[] pivotIndices = { i, j };
+                int[] pivotIndices = {i, j};
                 return pivotIndices;
             }
 
@@ -199,6 +199,7 @@ public class BankAccount {
         int i = 0, j = 0, k = low;
 
         while (i < n1 && j < n2) {
+            comparisons++; // Increment comparisons
             if (left.get(i).getBalance() >= right.get(j).getBalance()) {
                 accounts.set(k, left.get(i));
                 i++;
@@ -220,7 +221,29 @@ public class BankAccount {
             j++;
             k++;
         }
+
+        swaps += k - low; // Increment swaps
     }
+
+    public static void performMergeSort(List<BankAccount> accounts) {
+        comparisons = 0; // Reset comparisons count
+        swaps = 0;       // Reset swaps count
+
+        long startTime = System.nanoTime(); // Record start time in nanoseconds
+        mergeSort(accounts, 0, accounts.size() - 1);
+        long endTime = System.nanoTime();   // Record end time in nanoseconds
+
+        // Calculate execution time in nanoseconds
+        mergeSortTime = endTime - startTime;
+
+        // Print statistics for merge sort
+        System.out.println("\nMerge Sort:");
+        System.out.println("Theoretical Complexity Estimate: O(n log n)");
+        System.out.println("Comparisons: " + comparisons);
+        System.out.println("Swaps: " + swaps);
+        System.out.println("Execution Time (ns): " + mergeSortTime);
+    }
+
 
     public static void writeSortedDataToCSV(List<BankAccount> sortedAccounts, String filePath) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(filePath))) {
@@ -250,8 +273,8 @@ public class BankAccount {
         List<BankAccount> bankAccounts = readFromCSV(filePath);
         //  bubbleSort(bankAccounts);
         //  quickSort(bankAccounts, 0, bankAccounts.size() - 1);
-        performQuickSort(bankAccounts);
-        //  mergeSort(bankAccounts, 0, bankAccounts.size() - 1);
+        //performQuickSort(bankAccounts);
+        performMergeSort(bankAccounts);
         writeSortedDataToCSV(bankAccounts, writePath);
     }
 }
