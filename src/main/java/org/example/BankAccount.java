@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -109,7 +110,7 @@ public class BankAccount {
         System.out.println("Theoretical Complexity Estimate: O(n^2)");
         System.out.println("Comparisons: " + comparisons);
         System.out.println("Swaps: " + swaps);
-        System.out.println("Execution Time (ns): " + bubbleSortTime);
+        System.out.println("Execution Time (ms): " + TimeUnit.NANOSECONDS.toMicros(bubbleSortTime));
     }
 
     //Second sorting method
@@ -163,7 +164,7 @@ public class BankAccount {
         System.out.println("Theoretical Complexity Estimate: O(n log n) average case");
         System.out.println("Comparisons: " + comparisons);
         System.out.println("Swaps: " + swaps);
-        System.out.println("Execution Time (ns): " + quickSortTime);
+        System.out.println("Execution Time (ms): " + TimeUnit.NANOSECONDS.toMicros(quickSortTime));
     }
 
 
@@ -241,7 +242,7 @@ public class BankAccount {
         System.out.println("Theoretical Complexity Estimate: O(n log n)");
         System.out.println("Comparisons: " + comparisons);
         System.out.println("Swaps: " + swaps);
-        System.out.println("Execution Time (ns): " + mergeSortTime);
+        System.out.println("Execution Time (ms): " + TimeUnit.NANOSECONDS.toMicros(mergeSortTime));
     }
 
 
@@ -271,10 +272,15 @@ public class BankAccount {
     public static void main(String[] args) {
         //    printAccounts();
         List<BankAccount> bankAccounts = readFromCSV(filePath);
-        //  bubbleSort(bankAccounts);
-        //  quickSort(bankAccounts, 0, bankAccounts.size() - 1);
-        //performQuickSort(bankAccounts);
-        performMergeSort(bankAccounts);
+        //sort by lastname by alphabetical order
+        //   bubbleSort(bankAccounts);
+
+        //   quickSort(bankAccounts, 0, bankAccounts.size() - 1);
+        //sort by balance in ascending order
+        performQuickSort(bankAccounts);
+
+        //sort by balance in descending order
+        //performMergeSort(bankAccounts);
         writeSortedDataToCSV(bankAccounts, writePath);
     }
 }
